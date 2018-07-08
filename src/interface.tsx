@@ -14,7 +14,7 @@ import {
   Values
 } from "@sajari/sdk-react";
 
-const values = new Values();
+//const values = new Values();
 
 // Any change to values should reset the paginator back to page 1
 /*
@@ -41,7 +41,7 @@ const tabsFilter = new Filter(
   },
   "All"
 );
-values.set({ filter: () => tabsFilter.filter() });
+//values.set({ filter: () => tabsFilter.filter() });
 
 const tabs = [
   { name: "All", display: "All" },
@@ -51,12 +51,12 @@ const tabs = [
   { name: "Fundraise", display: "Project-Based Fundraising" }
 ];
 
-const categoryFilter = new Filter(
+export const categoryFilter = new Filter(
   {
-    blog: "domain='curiosity.weizmann-usa.org'",
-    computers: "tag='Computers'",
-    physics: "tag='Physics'",
-    other: "dir1!='blog' AND dir1!='faq'"
+//    blog: "domain='curiosity.weizmann-usa.org'",
+//    Computers: "tag~'TEST'",
+//    physics: "tag='Physics'",
+//    other: "dir1!='blog' AND dir1!='faq'"
   },
   [],
   true
@@ -70,16 +70,16 @@ const Categories: React.SFC<{ filter: Filter }> = ({ filter }) => (
       <h3>Tags</h3>
       <ul>
         <li>
-          <Checkbox name="blog" /> <label>Blog</label>
+          <Checkbox name="Alternative energy" /> <label>Alternative energy</label>
         </li>
         <li>
-          <Checkbox name="computers" /> <label>Computers</label>
+          <Checkbox name="Computers" /> <label>Computers</label>
         </li>
         <li>
-          <Checkbox name="physics" /> <label>Physics</label>
+          <Checkbox name="Physics" /> <label>Physics</label>
         </li>
         <li>
-          <Checkbox name="other" /> <label>Other</label>
+          <Checkbox name="Astrophysics" /> <label>Astrophysics</label>
         </li>
       </ul>
     </div>
@@ -92,9 +92,9 @@ export const Interface: React.SFC = () => (
       <Categories filter={categoryFilter} />
     </div>
     <div className={rightColCSS}>
-      <Input mode="typeahead" />
+      <Input mode="typeahead" dropdownMode="suggestions" />
       <Response>
-        <Tabs filter={filter} tabs={tabs} />
+        <Tabs filter={tabsFilter} tabs={tabs} />
         <Summary />
         <Results />
         <Paginator />

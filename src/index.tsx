@@ -9,7 +9,7 @@ import {
   EVENT_SELECTION_UPDATED,
   EVENT_RESPONSE_UPDATED
 } from "@sajari/sdk-react";
-import { Interface, filter } from "./interface";
+import { Interface, filter, categoryFilter } from "./interface";
 
 // takes the counts returned by Sajari and returns a 'dictionary' with the tag name as the key, and the value is the count
 // sajari returns the colon separated list of tags as a key (e.g. "Computers:Culture:Technology")
@@ -63,26 +63,32 @@ pipeline.listen(EVENT_RESPONSE_UPDATED, response => {
     return;
   }
 
-  console.log(response.getAggregates()["count.tag"]);
-  console.log(GetTagCounts(response.getAggregates()["count.tag"]));
+  var tagCounts = GetTagCounts(response.getAggregates()["count.tag"]);
+  console.log("tags", tagCounts);
 
-  response.getResults().forEach(result => {
-    console.log(result);
+  Object.keys(tagCounts).map(function(objectKey, index) {
+    categoryFilter.options[objectKey] = "tag~'"+objectKey+"'";
   });
+
+  console.log("categoryFilter.options", categoryFilter.options);
+  //response.getResults().forEach(result => {
+  //  console.log(result);
+  //});
 });
 
 const values = new Values();
 values.set({ count: "tag" });
-
 values.set({ filter: () => filter.filter() });
+
 filter.listen(EVENT_SELECTION_UPDATED, () => {
   values._emitUpdated();
-  console.log("values", values);
   // only run search if the query string is non empty
   const query = values.get()["q"];
   if (query === undefined || query === "") {
+    console.log("query is underined or empty");
     return;
   }
+  console.log("values", values.get());
   pipeline.search(values.get());
 });
 
