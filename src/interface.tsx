@@ -52,12 +52,7 @@ const tabs = [
 ];
 
 export const categoryFilter = new Filter(
-  {
-//    blog: "domain='curiosity.weizmann-usa.org'",
-//    Computers: "tag~'TEST'",
-//    physics: "tag='Physics'",
-//    other: "dir1!='blog' AND dir1!='faq'"
-  },
+  {},
   [],
   true
 );
