@@ -6,9 +6,28 @@ import {
   Pipeline,
   Values,
   NoTracking,
-  EVENT_SELECTION_UPDATED
+  EVENT_SELECTION_UPDATED,
+  EVENT_RESPONSE_UPDATED
 } from "@sajari/sdk-react";
 import { Interface, filter } from "./interface";
+
+// takes the counts returned by Sajari and returns a 'dictionary' with the tag name as the key, and the value is the count
+// sajari returns the colon separated list of tags as a key (e.g. "Computers:Culture:Technology")
+function GetTagCounts(data) {
+  var tagCounts = {};
+  if (data === undefined) return tagCounts;
+
+  Object.keys(data).map(function(objectKey, index) {
+    var value = data[objectKey];
+    var list = objectKey.split(";");
+    list.forEach(function(i) {
+      if (tagCounts[i] === undefined) tagCounts[i] = value;
+      else tagCounts[i] = tagCounts[i] + value;
+    });
+  });
+
+  return tagCounts;
+}
 
 const pipeline = new Pipeline(
   {
@@ -30,8 +49,30 @@ pipeline.search = function(values) {
   this.origSearch(values);
 };
 
+pipeline.listen(EVENT_RESPONSE_UPDATED, response => {
+  if (response.isEmpty()) {
+    // Empty response, could have been cleared via pipeline.clearResponse()
+    console.log("empty response");
+    return;
+  }
+
+  if (response.isError()) {
+    // Error response, normally due to incorrect project/collection/pipeline
+    // or transient errors contacting the server.
+    console.error("error response:", response.getError());
+    return;
+  }
+
+  console.log(response.getAggregates()["count.tag"]);
+  console.log(GetTagCounts(response.getAggregates()["count.tag"]));
+
+  response.getResults().forEach(result => {
+    console.log(result);
+  });
+});
+
 const values = new Values();
-values.set({ count: "tag"});
+values.set({ count: "tag" });
 
 values.set({ filter: () => filter.filter() });
 filter.listen(EVENT_SELECTION_UPDATED, () => {
